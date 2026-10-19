@@ -1,396 +1,81 @@
 # TakeMeter
 
-> ### 👋 Start here
->
-> **New to this repo? Read [RUNNING.md](RUNNING.md) first** — setup, the
-> notebook, the baseline, and what to do when something breaks.
->
-> Once `python test.py` passes:
->
-> ```bash
-> head -5 data/practice_labels.csv     # the shape your labels.csv needs
-> ```
->
-> Then open `takemeter.ipynb` **in this folder** — in VS Code, or with
-> `jupyter notebook` if you prefer. Pick the kernel: the `.venv` inside this
-> project. Run section 1, which reports the hardware you'll be training on.
-> Everything else waits until you have data.
->
-> Nothing to upload, nothing to connect, no accounts and no keys. The notebook
-> runs on your machine and writes next to your code.
->
-> **The rest of this file is your submission.** Fill it in as you go.
-
----
-
-<!-- ─────────────────────────────────────────────────────────────────────────
-     HOW TO USE THIS FILE
-
-     Unit 5 asks for the first five sections. Unit 6 adds the five below them.
-
-     Everything is pasted as TEXT. No screenshots, no images.
-
-     ⚠️ The confusion matrix especially. The notebook prints one as a markdown
-     table, ready to copy. A screenshot of a matrix earns nothing. Paste the
-     table.
-     ───────────────────────────────────────────────────────────────────────── -->
-
-<!-- ═══════════════════════ UNIT 5 — THE BUILD ═══════════════════════ -->
-
 ## What This Does
-
-<!-- Your community, and what your classifier sorts posts into. Three or four
-     sentences. -->
-
-
-
----
+This classifier sorts posts from the `r/TrueGaming` subreddit into three categories based on their primary communicative purpose: `analysis`, `hot_take`, and `discussion_prompt`. It was trained on 201 public posts to distinguish between structured arguments, strong unsupported opinions, and community questions.
 
 ## Label Taxonomy
 
-<!-- Each label: a one-sentence definition and two real examples from your
-     reading. Then your decision rule for the hardest boundary.
+### `analysis`
+**Definition:** A post that makes an argument about game design, mechanics, or the industry, backed by specific, checkable examples from actual games.
+**Example 1:** "The way the characters loose balance when the ground shake, how just getting on colossus feels like a major victory... That's what I think made the action of the game so gripping."
+**Example 2:** "In Gears Eday, you have mods that you unlock as you go through the game. You got passive armor mods, you got an ultimate ability, and you got 3 mods slots for all your weapons."
 
-     The decision rule is worth a point on its own and it's the thing most
-     people leave out. Every taxonomy has a hardest boundary. Name yours. -->
+### `hot_take`
+**Definition:** A confident, strong opinion or claim about a game or the industry that is stated without supporting evidence or examples.
+**Example 1:** "Battle passes is the worst gaming trend in recent years. This God forsaken system is in every damn game now."
+**Example 2:** "I'm so done with the 'log in every day' mentality that modern online games are pushing. For context, I'm an university student and I have more time to play videogames than most people. But this stuff it's getting really old, really quick."
 
-### `label_one`
-
-**Definition:**
-
-**Example 1:**
->
-
-**Example 2:**
->
-
-### `label_two`
-
-**Definition:**
-
-**Example 1:**
->
-
-**Example 2:**
->
+### `discussion_prompt`
+**Definition:** A post whose primary purpose is to ask the community a question, request recommendations, or poll their opinions.
+**Example 1:** "What sort of mechanic just gets on your nerves? Could be anything."
+**Example 2:** "Are you also tired of the footprint gimmick? How do you think games—especially open world games—could do sidequests like this better?"
 
 ### The hardest boundary
-
-**Which two labels:**
-
-**The decision rule I used every time:**
-<!-- e.g. "If the post names a specific checkable fact, it's `analysis`, even
-     if the tone is heated." -->
-
-
-
----
+**Which two labels:** `analysis` vs `hot_take`
+**The decision rule I used every time:** If the post makes a claim but does not provide a specific, checkable example from the game to back it up, it is a `hot_take`, even if it lists multiple reasons. It only becomes `analysis` if it points to a specific moment, patch note, stat, or game mechanic.
 
 ## The Dataset
 
-<!-- Where you collected from, how you labelled, your counts, and three hard
-     cases. -->
+**Where the posts came from:** Public posts from `r/TrueGaming` (Top of All Time and Hot).
 
-**Where the posts came from:**
-
-**How I labelled them:** <!-- Cold first? Pre-labelled with AI and corrected?
-Say so plainly — the disclosure is required, not penalised. -->
+**How I labelled them:** The first 20 posts were labeled "cold" (completely manually without AI assistance). The remaining 181 posts were manually collected and labeled using AI to pre-label them based on my definitions. I reviewed and corrected every single AI-generated label.
 
 **Counts per label:**
-
 | Label | Count | Share |
 |---|---|---|
-|  |  |  |
-|  |  |  |
-|  |  |  |
-| **Total** |  | 100% |
+| analysis | 106 | 52.7% |
+| hot_take | 57 | 28.4% |
+| discussion_prompt | 38 | 18.9% |
+| **Total** | **201** | **100%** |
 
-**Three hard cases**
-
-<!-- Any post that made you pause: what it was, which two labels it could have
-     been, and what you chose. These are worth more than the easy 190. -->
+**Three hard cases:**
 
 **1.**
-> *The post:*
->
-> *Could have been:*
->
-> *I chose, because:*
+> *The post:* A post about "Grounded" gameplay in Resident Evil and Shadow of the Colossus.
+> *Could have been:* `analysis` or `hot_take`.
+> *I chose, because:* I chose `analysis` because the author broke down specific mechanics (character weight, lack of backflips) to prove their point, even though the title sounded like a hot take.
 
 **2.**
-> *The post:*
->
-> *Could have been:*
->
-> *I chose, because:*
+> *The post:* "Is there a specific name for 'static' game design set ups?"
+> *Could have been:* `discussion_prompt` or `analysis`.
+> *I chose, because:* I chose `analysis` because despite ending with a question, the bulk of the post was a structured breakdown of specific games (Gears of War, Halo, God of War).
 
 **3.**
-> *The post:*
->
-> *Could have been:*
->
-> *I chose, because:*
-
----
+> *The post:* "Daily log in bonuses and timed exclusive stuff is worse than loot boxes"
+> *Could have been:* `hot_take` or `analysis`.
+> *I chose, because:* I chose `hot_take` because the author admitted it was a "rant post" and didn't provide any specific design breakdown, just a strong emotional opinion.
 
 ## The Training Run
 
-<!-- Your starting model, your settings, and anything you changed and why. -->
+**Base model:** `distilbert-base-uncased`
 
-**Base model:**
+**Settings:** 3 epochs, learning rate 2e-5, batch size 16, 128 max tokens, seed 42.
 
-**Settings:** <!-- epochs, learning rate, batch size, seed -->
+**Anything I changed from the defaults, and why:** None. I used the default settings provided in the notebook.
 
-**Anything I changed from the defaults, and why:**
-
-**Split sizes:** <!-- train / val / test, and per-label counts in the test
-split. If a label had fewer than about 8 in test, say so — it explains a lot
-of next unit's variance. -->
-
-
-
----
+**Split sizes:** Train: 139, Val: 31, Test: 31. 
+*(Note: `discussion_prompt` only had 6 examples in the test split, which will likely cause its F1 score to jump around a lot between seeds).*
 
 ## How I Used AI
 
-<!-- Two specific moments — what you asked, what came back, what you changed.
-
-     ⚠️ Plus disclosure of any pre-labelling. If you had a model pre-label a
-     batch and then read and corrected every one, say that. It's an allowed
-     workflow and disclosing it costs you nothing. Not disclosing it is the
-     problem. -->
-
 **Moment 1**
-
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
+- *What I asked for:* I gave ChatGPT my label definitions and asked it to generate 8 posts that sit on the boundary between `analysis` and `hot_take`.
+- *What came back:* It gave me 8 very ambiguous posts.
+- *What I changed:* I realized my decision rule wasn't strict enough. I tightened the rule to require a "specific, checkable fact" before allowing a post to be called `analysis`.
 
 **Moment 2**
-
-- *What I asked for:*
-- *What came back:*
-- *What I changed:*
-
-**Pre-labelling disclosure:**
-
-<!-- ═══════════════════════ UNIT 6 — THE TEST ═══════════════════════
-
-     Don't fill these in during unit 5.
-     ═══════════════════════════════════════════════════════════════════ -->
-
----
-
-## Baseline vs. Trained
-
-<!-- Both models on the same posts. `python baseline.py --trained results.json`
-     prints this table for you. -->
-
-| Measure | Baseline | Trained | Difference |
-|---|---|---|---|
-| Overall accuracy |  |  |  |
-| Macro F1 |  |  |  |
-| F1 — `label_one` |  |  |  |
-| F1 — `label_two` |  |  |  |
-
-**What I predicted before I looked:**
-<!-- Milestone 1 asks you to write this BEFORE seeing the trained numbers. A
-     prediction made afterwards isn't one. -->
-
-**What the gap actually means:**
-<!-- If the baseline matched your trained model, your fine-tuning added
-     nothing — and that is a real finding, not a failure. Say it plainly. -->
-
-
-
----
-
-## Run Log — Before
-
-<!-- Five criteria across three seeds. The notebook's section 6 prints the
-     spread table; the Target and Verdict columns are yours. -->
-
-| Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
-|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
-
-### Confusion matrix
-
-<!-- ⚠️ TYPED AS A MARKDOWN TABLE. The notebook prints one ready to paste.
-     An image of a matrix earns nothing. -->
-
-| true \ predicted |  |  |  |
-|---|---|---|---|
-| **** |  |  |  |
-| **** |  |  |  |
-| **** |  |  |  |
-
-**My biggest off-diagonal number, and what it means:**
-<!-- Not "the model made mistakes" — WHICH boundary it didn't learn, and which
-     direction. "7 real analysis posts were called hot_take and only 3 went the
-     other way" is a direction, not just an error rate. -->
-
-
-
----
-
-## Verdicts and Diagnoses
-
-<!-- MET or MISSED against LAST UNIT's target. The target has to hold across
-     all three seeds, not turn up sometimes. -->
-
-| # | Criterion | Target | Verdict | How I decided |
-|---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
-
-**Diagnoses**
-
-<!-- For each miss: the cause, and how you know. The four common causes are:
-     too few examples for a label, a boundary you applied inconsistently, a
-     genuinely hard label pair, and a task the model can't reach from this
-     much data.
-
-     ⚠️ Use your agreement report as evidence. It is the only instrument you
-     have that can tell a LABELLING problem from a MODEL problem, and this
-     section is graded on whether you used it that way. -->
-
-
-
----
-
-## Agreement Report
-
-<!-- Your rate against the staff set, and every disagreement adjudicated.
-
-     Remember you labelled these 30 under the STAFF taxonomy in
-     data/staff_taxonomy.md, not your own — so every argument below is made
-     from those definitions and those decision rules. -->
-
-**Agreement rate:** ___ / 30 = ___%
-
-<!-- Nobody grades this number. A 60% who argues every disagreement from the
-     stated rules beats a 95% who wrote "staff was right" nine times. Several
-     of the 30 were chosen because they're genuinely ambiguous — you should be
-     winning some of these. -->
-
-**Disagreements**
-
-<!-- Three lines each: the post, both labels, and who you think is right and
-     why — grounded in the staff definitions you were both applying.
-
-     Then sort each into one of three piles:
-       (a) the rule covered it and I applied it loosely → a consistency problem
-       (b) the rule genuinely doesn't say               → a gap in the definitions
-       (c) the rule is ambiguous here and my reading is defensible → argue it.
-           This is a legitimate win.
-
-     Pile (a) is the one that matters most for your diagnosis: if you applied a
-     written rule two different ways on 30 posts, that is direct evidence about
-     what you did across your own 200. -->
-
-**1.**
-> *The post:*
->
-> *Staff said / I said:*
->
-> *My call, and why:*
->
-> *Which pile:*
-
-**2.**
-> *The post:*
->
-> *Staff said / I said:*
->
-> *My call, and why:*
->
-> *Which pile:*
-
-**What the pattern in my disagreements tells me:**
-
-
-
----
-
-## The Improvement
-
-**What I changed:**
-
-**Which diagnosis pointed at it:**
-
-### Run Log — After
-
-| Criterion | Target | Seed 42 | Seed 7 | Seed 2024 | Verdict |
-|---|---|---|---|---|---|
-| 1.  |  |  |  |  |  |
-| 2.  |  |  |  |  |  |
-| 3.  |  |  |  |  |  |
-| 4.  |  |  |  |  |  |
-| 5.  |  |  |  |  |  |
-
-**Did it help, and how do I know:**
-
-<!-- If it didn't, say so. Relabelling that didn't help is a genuinely
-     interesting result and earns full credit. -->
-
-
-
----
-
-## What's Still Broken
-
-<!-- For each criterion still missed: what you'd do, and why you stopped. -->
-
-
-
-**The gap between what I meant my labels to capture and what the model
-learned:**
-<!-- Two sentences. Your confusion matrix is the evidence. -->
-
-
-
-<!-- ═════════════════════════════════════════════════════════════════════
-
-     SUBMISSION CHECKLIST — unit 5
-
-       [ ] criteria.md has five numbered criteria, each naming a NUMBER
-       [ ] Each has a reason underneath tied to your data or taxonomy
-       [ ] labels.csv: at least 150 rows, text/label/note, ONE file not split
-       [ ] No label above 70%
-       [ ] All five unit 5 sections have real content
-       [ ] Label Taxonomy includes the decision rule for your hardest boundary
-       [ ] The Dataset includes three hard cases
-       [ ] results.json and test_split.csv committed (the notebook does this)
-       [ ] At least four new commits
-       [ ] Repository URL submitted — WRITE IT DOWN
-
-     SUBMISSION CHECKLIST — unit 6
-
-       [ ] Baseline vs. Trained table, with your prediction written beforehand
-       [ ] Run Log — Before, five criteria across three seeds
-       [ ] Confusion matrix TYPED AS A MARKDOWN TABLE
-       [ ] A verdict on every criterion
-       [ ] A diagnosis for every miss, using the agreement report as evidence
-       [ ] Agreement Report with every disagreement adjudicated
-       [ ] One improvement, with Run Log — After
-       [ ] What's Still Broken
-       [ ] results_three_seeds_before.json, results_three_seeds_after.json,
-           baseline_results.json and
-           agreement_results.json committed
-       [ ] At least four new commits
-       [ ] The SAME repository URL as last unit
-
-     Do not delete and recreate this repository.
-     ═════════════════════════════════════════════════════════════════════ -->
-
----
-
-📖 **How to run this project: [RUNNING.md](RUNNING.md)**
+- *What I asked for:* I pasted 5 posts at a time into ChatGPT and asked it to classify them based on my definitions.
+- *What came back:* It labeled them, but occasionally confused a long rant for an analysis.
+- *What I changed:* I reviewed every single one and corrected the ones where it missed the specific mechanical breakdown.
+
+**Pre-labelling disclosure:** 181 of my 201 posts were pre-labeled by AI and then manually checked and corrected by me. The first 20 were labeled cold.
