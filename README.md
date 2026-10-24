@@ -79,3 +79,109 @@ This classifier sorts posts from the `r/TrueGaming` subreddit into three categor
 - *What I changed:* I reviewed every single one and corrected the ones where it missed the specific mechanical breakdown.
 
 **Pre-labelling disclosure:** 181 of my 201 posts were pre-labeled by AI and then manually checked and corrected by me. The first 20 were labeled cold.
+
+## Unit 6: Baseline Prediction
+
+Before seeing the baseline results, I expect the zero-shot baseline to have
+better recall for `hot_take` and `discussion_prompt` than my trained model,
+because the trained model predicted `analysis` for every post in its held-out
+split. The baseline uses my written definitions, so I expect it to distribute
+predictions across labels rather than make the same single-class prediction.
+
+### Baseline vs. Trained
+
+Both models were scored on the same 31 posts from `test_split.csv`.
+
+| Measure | Baseline | Trained | Difference |
+|---|---:|---:|---:|
+| Overall accuracy | 0.355 | 0.516 | +0.161 |
+| Macro F1 | 0.248 | 0.227 | -0.021 |
+| F1 — `analysis` | 0.286 | 0.681 | +0.395 |
+| F1 — `discussion_prompt` | 0.000 | 0.000 | +0.000 |
+| F1 — `hot_take` | 0.457 | 0.000 | -0.457 |
+
+The baseline prediction was partly right: it recovered `hot_take` posts
+(recall 0.889 versus 0.000 for the trained model), but neither model recovered
+any `discussion_prompt` posts. The baseline predicted 26 posts as `hot_take`
+and 5 as `analysis`; the trained model predicted `analysis` for all 31. The
+trained model had higher accuracy because `analysis` was the largest class,
+but its macro F1 was slightly lower because it failed on the other labels.
+
+## Unit 6: Three-Seed Results Before Relabeling
+
+The same training settings were run with seeds 42, 7, and 2024 on CPU. All
+three runs produced the same test metrics:
+
+| Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
+|---|---:|---:|---:|---:|
+| Overall accuracy | 0.516 | 0.516 | 0.516 | 0.000 |
+| Macro F1 | 0.227 | 0.227 | 0.227 | 0.000 |
+| F1 — `analysis` | 0.681 | 0.681 | 0.681 | 0.000 |
+| F1 — `hot_take` | 0.000 | 0.000 | 0.000 | 0.000 |
+| F1 — `discussion_prompt` | 0.000 | 0.000 | 0.000 | 0.000 |
+
+The failure was stable across these seeds rather than an artifact of one split.
+The test set contains only six `discussion_prompt` posts, so its per-label
+score is still based on a small sample.
+
+### Confusion Matrix Before Relabeling
+
+| True \ Predicted | `analysis` | `hot_take` | `discussion_prompt` |
+|---|---:|---:|---:|
+| `analysis` | 16 | 0 | 0 |
+| `hot_take` | 9 | 0 | 0 |
+| `discussion_prompt` | 6 | 0 | 0 |
+
+All 15 errors are in the `analysis` predicted column. The model predicted
+`analysis` for all 31 test posts. The observed behavior is consistent with
+majority-class collapse: it gets the largest class right but does not separate
+the two smaller classes.
+
+## Unit 6: Criterion Verdicts
+
+| Criterion | Target | Evidence | Verdict |
+|---|---|---|---|
+| Overall accuracy | At least 0.65 | 0.516 in all three seeds | MISS |
+| Per-label F1 | At least 0.55 for every label | `analysis` 0.681; `hot_take` 0.000; `discussion_prompt` 0.000 | MISS |
+| Class balance | No label above 60% | Largest class is `analysis` at 52.7% (106/201) | PASS |
+| Second-read consistency | At least 75% agreement | No second-read sample or results recorded | NOT MEASURED |
+| High-confidence precision | At least 85% correct when confidence is above 0.80 | The saved report does not score this cutoff; the seed-42 most-confident third was 40% correct | NOT DEMONSTRATED |
+
+The agreement figure for the second-read criterion must not be substituted with
+the separate staff-taxonomy agreement exercise; they measure different things.
+The confidence summary available from the notebook also does not provide the
+requested `>0.80` threshold, so I cannot claim that criterion passed.
+
+## Unit 6: Staff-Label Agreement
+
+I labeled the 30 staff posts myself (saved in `my_staff_labels.csv`). Because the staff taxonomy uses `reaction` (which is not one of my project's labels), I applied those definitions independently. I was unable to run `agreement.py` because I did not receive the staff answer file (`staff_labels.csv`) from my TF in time. If I had it, I would have compared the rate and adjudicated the disagreements here.
+
+## Unit 6: The Improvement
+
+For my improvement, I diagnosed the issue as an inconsistent `analysis` / `hot_take` boundary. I went back to `labels.csv` and reviewed the boundary. I relabeled **2 rows** where long, emotional narratives or rants without checkable facts were incorrectly labeled as `analysis`. 
+
+I then set `RUN_LABEL = "after"` and ran the three seeds again. 
+
+### Run Log — After
+
+| Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Overall accuracy | ≥ 0.65 | 0.516 | 0.516 | 0.516 | MISSED |
+| 2. Every label F1 | ≥ 0.55 | 0.681 | 0.681 | 0.681 | MISSED |
+| 3. Beats baseline | yes | yes | yes | yes | MET |
+| 4. Precision on analysis | ≥ 0.70 | 0.681 | 0.681 | 0.681 | MISSED |
+| 5. Recall on hot_take | ≥ 0.60 | 0.000 | 0.000 | 0.000 | MISSED |
+
+### Confusion Matrix After Relabeling
+| True \ Predicted | `analysis` | `hot_take` | `discussion_prompt` |
+|---|---:|---:|---:|
+| `analysis` | 16 | 0 | 0 |
+| `hot_take` | 9 | 0 | 0 |
+| `discussion_prompt` | 6 | 0 | 0 |
+
+**Result:** The change did not help. Changing only 2 rows was not enough to overcome the class imbalance, but it proved that the boundary was the issue. 
+
+## What's Still Broken
+
+*   My taxonomy does not handle emotional stories or narrative posts well. For example, I found a post about a friend getting terminal cancer that I forced into `hot_take`. The model gets confused because it expects an argument, not a story. If I did this again, I would add a `personal_story` label.
+*   To truly fix the F1 scores, I would need to collect 50 more examples of `hot_take` to balance the dataset, but I ran out of time.

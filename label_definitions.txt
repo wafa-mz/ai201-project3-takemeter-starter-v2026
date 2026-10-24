@@ -1,20 +1,3 @@
-Community: r/TrueGaming
-
-Labels:
-1. analysis
-Definition: A post that makes an argument about game design, mechanics, or the industry, backed by specific, checkable examples from actual games.
-Example 1: "Why the loot system in Diablo 4 fails compared to Path of Exile" (assuming it includes specific mechanics).
-Example 2: "How Breath of the Wild uses empty space to guide the player" (assuming it breaks down the game design).
-
-2. hot_take
-Definition: A confident, strong opinion or claim about a game or the industry that is stated without supporting evidence or examples.
-Example 1: "Turn-based combat is outdated and boring."
-Example 2: "The Witcher 3 is actually a terrible RPG."
-
-3. discussion_prompt
-Definition: A post whose primary purpose is to ask the community a question, request recommendations, or poll their opinions.
-Example 1: "What is a game mechanic you wish more games would copy?"
-Example 2: "Looking for a game that will make me cry, any recommendations?"
-
-Decision Rule for Hardest Boundary (analysis vs hot_take):
-If the post makes a claim but does not provide a specific, checkable example from the game to back it up, it is a hot_take, even if it lists multiple reasons. It only becomes analysis if it points to a specific moment, patch note, or stat.
+analysis: A post that makes an argument about game design, mechanics, or the industry, backed by specific, checkable examples from actual games.
+hot_take: A confident, strong opinion or claim about a game or the industry that is stated without supporting evidence or examples.
+discussion_prompt: A post whose primary purpose is to ask the community a question, request recommendations, or poll their opinions.
