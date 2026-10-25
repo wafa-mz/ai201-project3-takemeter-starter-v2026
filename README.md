@@ -90,22 +90,37 @@ predictions across labels rather than make the same single-class prediction.
 
 ### Baseline vs. Trained
 
-Both models were scored on the same 31 posts from `test_split.csv`.
+Both models were scored on the same 31 posts from `test_split.csv`, using the
+definitions in `label_definitions.txt`. I regenerated `baseline_results.json`
+because the previous baseline report overlapped with only 13 of these 31 posts.
 
 | Measure | Baseline | Trained | Difference |
 |---|---:|---:|---:|
-| Overall accuracy | 0.355 | 0.516 | +0.161 |
-| Macro F1 | 0.248 | 0.227 | -0.021 |
-| F1 — `analysis` | 0.286 | 0.681 | +0.395 |
+| Overall accuracy | 0.323 | 0.548 | +0.226 |
+| Macro F1 | 0.232 | 0.236 | +0.004 |
+| F1 — `analysis` | 0.273 | 0.708 | +0.436 |
 | F1 — `discussion_prompt` | 0.000 | 0.000 | +0.000 |
-| F1 — `hot_take` | 0.457 | 0.000 | -0.457 |
+| F1 — `hot_take` | 0.424 | 0.000 | -0.424 |
 
-The baseline prediction was partly right: it recovered `hot_take` posts
-(recall 0.889 versus 0.000 for the trained model), but neither model recovered
-any `discussion_prompt` posts. The baseline predicted 26 posts as `hot_take`
-and 5 as `analysis`; the trained model predicted `analysis` for all 31. The
+The baseline predicted 25 posts as `hot_take`, 5 as `analysis`, and 1 as
+`discussion_prompt`; the trained model predicted `analysis` for all 31. The
 trained model had higher accuracy because `analysis` was the largest class,
-but its macro F1 was slightly lower because it failed on the other labels.
+but both models failed to recover any `discussion_prompt` posts.
+
+### Trained Prediction Spot Check
+
+The checkpoint is not saved, so this row-level spot check is reconstructed
+from the saved `results.json` confusion matrix: all 31 predictions are
+`analysis`, and the matrix's class supports match `test_split.csv`. The first
+10 rows (true label → predicted label) are:
+
+`analysis → analysis`, `discussion_prompt → analysis`, `hot_take → analysis`,
+`analysis → analysis`, `analysis → analysis`, `analysis → analysis`,
+`discussion_prompt → analysis`, `analysis → analysis`, `analysis → analysis`,
+`analysis → analysis`.
+
+This is a single-class collapse, not just a model that predicts `analysis`
+most of the time.
 
 ## Unit 6: Three-Seed Results Before Relabeling
 
