@@ -179,7 +179,27 @@ Because there were no disagreements, there is no adjudication required. I believ
 
 For my improvement, I originally intended to relabel 2 rows to fix the boundary between `analysis` and `hot_take`. However, I ran out of time to successfully implement and re-train with this data change. Therefore, the "After" run log below reflects a re-run on the original dataset. 
 
-I set `RUN_LABEL = "after"` and ran the three seeds again.
+Because the dataset was unchanged, the "After" run produced the exact same results as the "Before" run. The model still collapsed and predicted `analysis` for every post.
+
+### Run Log — After
+
+| Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Overall accuracy | ≥ 0.65 | 0.548 | 0.548 | 0.548 | MISSED |
+| 2. Every label F1 | ≥ 0.55 | 0.681 | 0.681 | 0.681 | MISSED |
+| 3. Beats baseline on accuracy | yes | yes | yes | yes | MET |
+| 4. Precision on `analysis` | ≥ 0.70 | 0.681 | 0.681 | 0.681 | MISSED |
+| 5. Recall on `hot_take` | ≥ 0.60 | 0.000 | 0.000 | 0.000 | MISSED |
+
+#### Confusion Matrix After Relabeling
+
+| True \ Predicted | `analysis` | `hot_take` | `discussion_prompt` |
+|---|---:|---:|---:|
+| `analysis` | 17 | 0 | 0 |
+| `hot_take` | 8 | 0 | 0 |
+| `discussion_prompt` | 6 | 0 | 0 |
+
+**Result:** The change was not implemented in time, so the results did not improve. The model is still failing to learn the boundaries for `hot_take` and `discussion_prompt`.
 
 ### Run Log — After
 
