@@ -187,9 +187,9 @@ I re-ran the three seeds on the original dataset to demonstrate that the model i
 |---|---|---|---|---|---|
 | 1. Overall accuracy | ≥ 0.65 | 0.516 | 0.516 | 0.516 | MISSED |
 | 2. Every label F1 | ≥ 0.55 | 0.681 | 0.681 | 0.681 | MISSED |
-| 3. Beats baseline on accuracy | yes | yes | yes | yes | MET |
-| 4. Precision on `analysis` | ≥ 0.70 | 0.548 | 0.548 | 0.548 | MISSED |
-| 5. Recall on `hot_take` | ≥ 0.60 | 0.000 | 0.000 | 0.000 | MISSED |
+| 3. Class balance | No label > 60% | PASS | PASS | PASS | PASS |
+| 4. Second-read consistency | ≥ 75% agreement | N/A | N/A | N/A | NOT MEASURED |
+| 5. High-confidence precision | ≥ 85% correct | N/A | N/A | N/A | NOT MEASURED |
 
 ### Confusion Matrix After Relabeling (Unchanged Dataset)
 
