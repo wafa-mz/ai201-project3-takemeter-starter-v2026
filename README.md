@@ -139,6 +139,16 @@ The failure was stable across these seeds rather than an artifact of one split.
 The test set contains only six `discussion_prompt` posts, so its per-label
 score is still based on a small sample.
 
+### Run Log — Before
+
+| Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Overall accuracy | ≥ 0.65 | 0.516 | 0.516 | 0.516 | MISSED |
+| 2. Every label F1 | ≥ 0.55 | 0.681 | 0.681 | 0.681 | MISSED |
+| 3. Class balance | No label > 60% | PASS | PASS | PASS | PASS |
+| 4. Second-read consistency | ≥ 75% agreement | N/A | N/A | N/A | NOT MEASURED |
+| 5. High-confidence precision | ≥ 85% correct | N/A | N/A | N/A | NOT MEASURED |
+
 ### Confusion Matrix Before Relabeling
 
 | True \ Predicted | `analysis` | `hot_take` | `discussion_prompt` |
@@ -179,14 +189,14 @@ Because there were no disagreements, there is no adjudication required. I believ
 
 For my improvement, I originally intended to relabel 2 rows to fix the boundary between `analysis` and `hot_take`. However, I ran out of time to successfully implement and re-train with this data change. Therefore, I was unable to complete the improvement milestone. 
 
-I re-ran the three seeds on the original dataset to demonstrate that the model is stable. The results changed slightly (accuracy dropped from 0.548 to 0.516), but the model still completely collapsed, predicting `analysis` for every single post.
+I re-ran the three seeds on the original dataset to demonstrate that the model is stable. The results changed slightly (accuracy increased from 0.516 to 0.548), but the model still completely collapsed, predicting `analysis` for every single post.
 
 ### Run Log — After
 
 | Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Overall accuracy | ≥ 0.65 | 0.516 | 0.516 | 0.516 | MISSED |
-| 2. Every label F1 | ≥ 0.55 | 0.681 | 0.681 | 0.681 | MISSED |
+| 1. Overall accuracy | ≥ 0.65 | 0.548 | 0.548 | 0.548 | MISSED |
+| 2. Every label F1 | ≥ 0.55 | 0.708 | 0.708 | 0.708 | MISSED |
 | 3. Class balance | No label > 60% | PASS | PASS | PASS | PASS |
 | 4. Second-read consistency | ≥ 75% agreement | N/A | N/A | N/A | NOT MEASURED |
 | 5. High-confidence precision | ≥ 85% correct | N/A | N/A | N/A | NOT MEASURED |
@@ -195,8 +205,8 @@ I re-ran the three seeds on the original dataset to demonstrate that the model i
 
 | True \ Predicted | `analysis` | `hot_take` | `discussion_prompt` |
 |---|---:|---:|---:|
-| `analysis` | 16 | 0 | 0 |
-| `hot_take` | 9 | 0 | 0 |
+| `analysis` | 17 | 0 | 0 |
+| `hot_take` | 8 | 0 | 0 |
 | `discussion_prompt` | 6 | 0 | 0 |
 
 **Result:** Because the planned relabeling was not implemented, the results did not improve. The model is still failing to learn the boundaries for `hot_take` and `discussion_prompt`.
@@ -204,7 +214,7 @@ I re-ran the three seeds on the original dataset to demonstrate that the model i
 ## What's Still Broken
 
 *   **Criterion 1 (Overall accuracy):** Missed. The model collapsed and defaulted to the majority class. 
-*   **Criterion 2 (Per-label F1):** Missed. The F1 for `hot_take` and `discussion_prompt` is 0.000. The 0.681 F1 is only for the `analysis` label. To fix this, I would need to add 50 more examples of `hot_take` to balance the dataset, but I ran out of time.
+*   **Criterion 2 (Per-label F1):** Missed. The F1 for `hot_take` and `discussion_prompt` is 0.000. The 0.708 F1 is only for the `analysis` label. To fix this, I would need to add 50 more examples of `hot_take` to balance the dataset, but I ran out of time.
 *   **Criterion 4 (Precision on analysis):** Missed. Precision was 0.548. This is tied to the model's collapse, which would require a larger dataset or class weighting to fix.
 *   **Criterion 5 (Recall on hot_take):** Missed. My taxonomy does not handle emotional stories well. I forced a post about a terminal cancer diagnosis into `hot_take`, which confused the model. If I did this again, I would add a `personal_story` label.
 *   **Consistency and Confidence:** These criteria were not measured because the notebook does not output a second-read sample or a confidence threshold report.
