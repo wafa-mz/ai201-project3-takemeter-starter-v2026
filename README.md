@@ -179,9 +179,9 @@ Because there were no disagreements, there is no adjudication required. I believ
 
 For my improvement, I originally intended to relabel 2 rows to fix the boundary between `analysis` and `hot_take`. However, I ran out of time to successfully implement and re-train with this data change. Therefore, I was unable to complete the improvement milestone. 
 
-I re-ran the three seeds on the original dataset to demonstrate that the model is stable, but the results did not change. I have documented the specific errors I would fix in the "What's Still Broken" section.
+I re-ran the three seeds on the original dataset to demonstrate that the model is stable, but the results did not change. The model collapsed and predicted `analysis` for every post.
 
-### Run Log — After
+### Run Log — After (Unchanged Dataset)
 
 | Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
 |---|---|---|---|---|---|
@@ -199,7 +199,13 @@ I re-ran the three seeds on the original dataset to demonstrate that the model i
 | `hot_take` | 8 | 0 | 0 |
 | `discussion_prompt` | 6 | 0 | 0 |
 
-**Result:** Because the planned relabeling was not implemented, the results did not improve. The model is still failing to learn the boundaries for `hot_take` and `discussion_prompt`.
+**Result:** Because the planned relabeling was not implemented, the results did not improve. 
+
+## What's Still Broken
+
+*   **Criterion 2 (Per-label F1):** Missed. To fix this, I would need to add 50 more examples of `hot_take` to balance the dataset, but I ran out of time.
+*   **Criterion 4 (Precision on analysis):** Missed. This is tied to the model's collapse, which would require a larger dataset or class weighting to fix.
+*   **Criterion 5 (Recall on hot_take):** Missed. My taxonomy does not handle emotional stories well. I forced a post about a terminal cancer diagnosis into `hot_take`, which confused the model. If I did this again, I would add a `personal_story` label.
 
 ### Run Log — After
 
