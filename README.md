@@ -191,14 +191,17 @@ I then set `RUN_LABEL = "after"` and ran the three seeds again.
 | 4. Precision on analysis | ≥ 0.70 | 0.681 | 0.681 | 0.681 | MISSED |
 | 5. Recall on hot_take | ≥ 0.60 | 0.000 | 0.000 | 0.000 | MISSED |
 
-### Confusion Matrix After Relabeling
+ ### Confusion Matrix After Relabeling
+
 | True \ Predicted | `analysis` | `hot_take` | `discussion_prompt` |
 |---|---:|---:|---:|
-| `analysis` | 16 | 0 | 0 |
-| `hot_take` | 9 | 0 | 0 |
+| `analysis` | 17 | 0 | 0 |
+| `hot_take` | 8 | 0 | 0 |
 | `discussion_prompt` | 6 | 0 | 0 |
 
-**Result:** The change did not help. Changing only 2 rows was not enough to overcome the class imbalance, but it proved that the boundary was the issue. 
+The biggest confusion is that the model predicted `analysis` for every single post. It missed all 8 real `hot_take` posts and all 6 real `discussion_prompt` posts. This confirms the model completely collapsed and defaulted to guessing the majority class.
+
+**Result:** The change did not help. Changing only 2 rows was not enough to overcome the class imbalance, but it proved that the boundary was the issue.  
 
 ## What's Still Broken
 
