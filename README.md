@@ -179,33 +179,35 @@ Because there were no disagreements, there is no adjudication required. I believ
 
 For my improvement, I originally intended to relabel 2 rows to fix the boundary between `analysis` and `hot_take`. However, I ran out of time to successfully implement and re-train with this data change. Therefore, I was unable to complete the improvement milestone. 
 
-I re-ran the three seeds on the original dataset to demonstrate that the model is stable, but the results did not change. The model collapsed and predicted `analysis` for every post.
+I re-ran the three seeds on the original dataset to demonstrate that the model is stable. However, the results changed slightly (accuracy dropped from 0.548 to 0.516), but the model still completely collapsed, predicting `analysis` for every single post.
 
 ### Run Log — After (Unchanged Dataset)
 
 | Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Overall accuracy | ≥ 0.65 | 0.548 | 0.548 | 0.548 | MISSED |
+| 1. Overall accuracy | ≥ 0.65 | 0.516 | 0.516 | 0.516 | MISSED |
 | 2. Every label F1 | ≥ 0.55 | 0.681 | 0.681 | 0.681 | MISSED |
 | 3. Beats baseline on accuracy | yes | yes | yes | yes | MET |
-| 4. Precision on `analysis` | ≥ 0.70 | 0.681 | 0.681 | 0.681 | MISSED |
+| 4. Precision on `analysis` | ≥ 0.70 | 0.548 | 0.548 | 0.548 | MISSED |
 | 5. Recall on `hot_take` | ≥ 0.60 | 0.000 | 0.000 | 0.000 | MISSED |
 
 #### Confusion Matrix After Relabeling (Unchanged Dataset)
 
 | True \ Predicted | `analysis` | `hot_take` | `discussion_prompt` |
 |---|---:|---:|---:|
-| `analysis` | 17 | 0 | 0 |
-| `hot_take` | 8 | 0 | 0 |
+| `analysis` | 16 | 0 | 0 |
+| `hot_take` | 9 | 0 | 0 |
 | `discussion_prompt` | 6 | 0 | 0 |
 
-**Result:** Because the planned relabeling was not implemented, the results did not improve. 
+**Result:** Because the planned relabeling was not implemented, the results did not improve. The model is still failing to learn the boundaries for `hot_take` and `discussion_prompt`.
 
 ## What's Still Broken
 
-*   **Criterion 2 (Per-label F1):** Missed. To fix this, I would need to add 50 more examples of `hot_take` to balance the dataset, but I ran out of time.
-*   **Criterion 4 (Precision on analysis):** Missed. This is tied to the model's collapse, which would require a larger dataset or class weighting to fix.
+*   **Criterion 1 (Overall accuracy):** Missed. The model collapsed and defaulted to the majority class, resulting in an accuracy of 0.516.
+*   **Criterion 2 (Per-label F1):** Missed. The F1 for `hot_take` and `discussion_prompt` is 0.000. To fix this, I would need to add 50 more examples of `hot_take` to balance the dataset, but I ran out of time.
+*   **Criterion 4 (Precision on analysis):** Missed. Precision was 0.548. This is tied to the model's collapse, which would require a larger dataset or class weighting to fix.
 *   **Criterion 5 (Recall on hot_take):** Missed. My taxonomy does not handle emotional stories well. I forced a post about a terminal cancer diagnosis into `hot_take`, which confused the model. If I did this again, I would add a `personal_story` label.
+*   **Consistency and Confidence:** These criteria were not measured because the notebook does not output a second-read sample or a confidence threshold report.
 
 ### Run Log — After
 
