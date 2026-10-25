@@ -177,9 +177,9 @@ Because there were no disagreements, there is no adjudication required. I believ
 
 ## Unit 6: The Improvement
 
-For my improvement, I originally intended to relabel 2 rows to fix the boundary between `analysis` and `hot_take`. However, I ran out of time to successfully implement and re-train with this data change. Therefore, the "After" run log below reflects a re-run on the original dataset. 
+For my improvement, I originally intended to relabel 2 rows to fix the boundary between `analysis` and `hot_take`. However, I ran out of time to successfully implement and re-train with this data change. Therefore, I was unable to complete the improvement milestone. 
 
-Because the dataset was unchanged, the "After" run produced the exact same results as the "Before" run. The model still collapsed and predicted `analysis` for every post.
+I re-ran the three seeds on the original dataset to demonstrate that the model is stable, but the results did not change. I have documented the specific errors I would fix in the "What's Still Broken" section.
 
 ### Run Log — After
 
@@ -191,7 +191,7 @@ Because the dataset was unchanged, the "After" run produced the exact same resul
 | 4. Precision on `analysis` | ≥ 0.70 | 0.681 | 0.681 | 0.681 | MISSED |
 | 5. Recall on `hot_take` | ≥ 0.60 | 0.000 | 0.000 | 0.000 | MISSED |
 
-#### Confusion Matrix After Relabeling
+#### Confusion Matrix After Relabeling (Unchanged Dataset)
 
 | True \ Predicted | `analysis` | `hot_take` | `discussion_prompt` |
 |---|---:|---:|---:|
@@ -199,7 +199,7 @@ Because the dataset was unchanged, the "After" run produced the exact same resul
 | `hot_take` | 8 | 0 | 0 |
 | `discussion_prompt` | 6 | 0 | 0 |
 
-**Result:** The change was not implemented in time, so the results did not improve. The model is still failing to learn the boundaries for `hot_take` and `discussion_prompt`.
+**Result:** Because the planned relabeling was not implemented, the results did not improve. The model is still failing to learn the boundaries for `hot_take` and `discussion_prompt`.
 
 ### Run Log — After
 
