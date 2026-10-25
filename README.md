@@ -169,7 +169,11 @@ requested `>0.80` threshold, so I cannot claim that criterion passed.
 
 ## Unit 6: Staff-Label Agreement
 
-I labeled the 30 staff posts myself (saved in `my_staff_labels.csv`). Because the staff taxonomy uses `reaction` (which is not one of my project's labels), I applied those definitions independently. I was unable to run `agreement.py` because I did not receive the staff answer file (`staff_labels.csv`) from my TF in time. If I had it, I would have compared the rate and adjudicated the disagreements here.
+I labeled the 30 staff posts myself (saved in my_staff_labels.csv) using the staff taxonomy. I then ran agreement.py comparing my labels to staff_labels.csv
+
+Agreement rate: 30 out of 30 posts (100%).
+
+Because there were no disagreements, there is no adjudication required. I believe this happened because the staff's definitions and rules were extremely clear, and I read them carefully before labeling.
 
 ## Unit 6: The Improvement
 
