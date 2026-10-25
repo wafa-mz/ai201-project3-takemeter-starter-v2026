@@ -82,17 +82,11 @@ This classifier sorts posts from the `r/TrueGaming` subreddit into three categor
 
 ## Unit 6: Baseline Prediction
 
-Before seeing the baseline results, I expect the zero-shot baseline to have
-better recall for `hot_take` and `discussion_prompt` than my trained model,
-because the trained model predicted `analysis` for every post in its held-out
-split. The baseline uses my written definitions, so I expect it to distribute
-predictions across labels rather than make the same single-class prediction.
+Before seeing the baseline results, I expect the zero-shot baseline to have better recall for `hot_take` and `discussion_prompt` than my trained model, because the trained model predicted `analysis` for every post in its held-out split. The baseline uses my written definitions, so I expect it to distribute predictions across labels rather than make the same single-class prediction.
 
 ### Baseline vs. Trained
 
-Both models were scored on the same 31 posts from `test_split.csv`, using the
-definitions in `label_definitions.txt`. I regenerated `baseline_results.json`
-because the previous baseline report overlapped with only 13 of these 31 posts.
+Both models were scored on the same 31 posts from `test_split.csv`, using the definitions in `label_definitions.txt`. I regenerated `baseline_results.json` because the previous baseline report overlapped with only 13 of these 31 posts.
 
 | Measure | Baseline | Trained | Difference |
 |---|---:|---:|---:|
@@ -102,30 +96,19 @@ because the previous baseline report overlapped with only 13 of these 31 posts.
 | F1 — `discussion_prompt` | 0.000 | 0.000 | +0.000 |
 | F1 — `hot_take` | 0.424 | 0.000 | -0.424 |
 
-The baseline predicted 25 posts as `hot_take`, 5 as `analysis`, and 1 as
-`discussion_prompt`; the trained model predicted `analysis` for all 31. The
-trained model had higher accuracy because `analysis` was the largest class,
-but both models failed to recover any `discussion_prompt` posts.
+The baseline predicted 25 posts as `hot_take`, 5 as `analysis`, and 1 as `discussion_prompt`; the trained model predicted `analysis` for all 31. The trained model had higher accuracy because `analysis` was the largest class, but both models failed to recover any `discussion_prompt` posts.
 
 ### Trained Prediction Spot Check
 
-The checkpoint is not saved, so this row-level spot check is reconstructed
-from the saved `results.json` confusion matrix: all 31 predictions are
-`analysis`, and the matrix's class supports match `test_split.csv`. The first
-10 rows (true label → predicted label) are:
+The checkpoint is not saved, so this row-level spot check is reconstructed from the saved `results.json` confusion matrix: all 31 predictions are `analysis`, and the matrix's class supports match `test_split.csv`. The first 10 rows (true label → predicted label) are:
 
-`analysis → analysis`, `discussion_prompt → analysis`, `hot_take → analysis`,
-`analysis → analysis`, `analysis → analysis`, `analysis → analysis`,
-`discussion_prompt → analysis`, `analysis → analysis`, `analysis → analysis`,
-`analysis → analysis`.
+`analysis → analysis`, `discussion_prompt → analysis`, `hot_take → analysis`, `analysis → analysis`, `analysis → analysis`, `analysis → analysis`, `discussion_prompt → analysis`, `analysis → analysis`, `analysis → analysis`, `analysis → analysis`.
 
-This is a single-class collapse, not just a model that predicts `analysis`
-most of the time.
+This is a single-class collapse, not just a model that predicts `analysis` most of the time.
 
 ## Unit 6: Three-Seed Results Before Relabeling
 
-The same training settings were run with seeds 42, 7, and 2024 on CPU. All
-three runs produced the same test metrics:
+The same training settings were run with seeds 42, 7, and 2024 on CPU. All three runs produced the same test metrics:
 
 | Measure | Seed 42 | Seed 7 | Seed 2024 | Spread |
 |---|---:|---:|---:|---:|
@@ -135,16 +118,14 @@ three runs produced the same test metrics:
 | F1 — `hot_take` | 0.000 | 0.000 | 0.000 | 0.000 |
 | F1 — `discussion_prompt` | 0.000 | 0.000 | 0.000 | 0.000 |
 
-The failure was stable across these seeds rather than an artifact of one split.
-The test set contains only six `discussion_prompt` posts, so its per-label
-score is still based on a small sample.
+The failure was stable across these seeds rather than an artifact of one split. The test set contains only six `discussion_prompt` posts, so its per-label score is still based on a small sample.
 
 ### Run Log — Before
 
 | Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
 |---|---|---|---|---|---|
 | 1. Overall accuracy | ≥ 0.65 | 0.516 | 0.516 | 0.516 | MISSED |
-| 2. Every label F1 | ≥ 0.55 | 0.681 | 0.681 | 0.681 | MISSED |
+| 2. Every label F1 | ≥ 0.55 | analysis: 0.681, hot_take: 0.000, discussion_prompt: 0.000 | analysis: 0.681, hot_take: 0.000, discussion_prompt: 0.000 | analysis: 0.681, hot_take: 0.000, discussion_prompt: 0.000 | MISSED |
 | 3. Class balance | No label > 60% | PASS | PASS | PASS | PASS |
 | 4. Second-read consistency | ≥ 75% agreement | N/A | N/A | N/A | NOT MEASURED |
 | 5. High-confidence precision | ≥ 85% correct | N/A | N/A | N/A | NOT MEASURED |
@@ -157,10 +138,7 @@ score is still based on a small sample.
 | `hot_take` | 9 | 0 | 0 |
 | `discussion_prompt` | 6 | 0 | 0 |
 
-All 15 errors are in the `analysis` predicted column. The model predicted
-`analysis` for all 31 test posts. The observed behavior is consistent with
-majority-class collapse: it gets the largest class right but does not separate
-the two smaller classes.
+All 15 errors are in the `analysis` predicted column. The model predicted `analysis` for all 31 test posts. The observed behavior is consistent with majority-class collapse: it gets the largest class right but does not separate the two smaller classes.
 
 ## Unit 6: Criterion Verdicts
 
@@ -172,10 +150,7 @@ the two smaller classes.
 | Second-read consistency | At least 75% agreement | No second-read sample or results recorded | NOT MEASURED |
 | High-confidence precision | At least 85% correct when confidence is above 0.80 | The saved report does not score this cutoff; the seed-42 most-confident third was 40% correct | NOT DEMONSTRATED |
 
-The agreement figure for the second-read criterion must not be substituted with
-the separate staff-taxonomy agreement exercise; they measure different things.
-The confidence summary available from the notebook also does not provide the
-requested `>0.80` threshold, so I cannot claim that criterion passed.
+The agreement figure for the second-read criterion must not be substituted with the separate staff-taxonomy agreement exercise; they measure different things. The confidence summary available from the notebook also does not provide the requested `>0.80` threshold, so I cannot claim that criterion passed.
 
 ## Unit 6: Staff-Label Agreement
 
@@ -196,7 +171,7 @@ I re-ran the three seeds on the original dataset to demonstrate that the model i
 | Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
 |---|---|---|---|---|---|
 | 1. Overall accuracy | ≥ 0.65 | 0.548 | 0.548 | 0.548 | MISSED |
-| 2. Every label F1 | ≥ 0.55 | 0.708 | 0.708 | 0.708 | MISSED |
+| 2. Every label F1 | ≥ 0.55 | analysis: 0.708, hot_take: 0.000, discussion_prompt: 0.000 | analysis: 0.708, hot_take: 0.000, discussion_prompt: 0.000 | analysis: 0.708, hot_take: 0.000, discussion_prompt: 0.000 | MISSED |
 | 3. Class balance | No label > 60% | PASS | PASS | PASS | PASS |
 | 4. Second-read consistency | ≥ 75% agreement | N/A | N/A | N/A | NOT MEASURED |
 | 5. High-confidence precision | ≥ 85% correct | N/A | N/A | N/A | NOT MEASURED |
@@ -213,8 +188,8 @@ I re-ran the three seeds on the original dataset to demonstrate that the model i
 
 ## What's Still Broken
 
-*   **Criterion 1 (Overall accuracy):** Missed. The model collapsed and defaulted to the majority class. 
+*   **Criterion 1 (Overall accuracy):** Missed. The model collapsed and defaulted to the majority class, resulting in an accuracy of 0.548.
 *   **Criterion 2 (Per-label F1):** Missed. The F1 for `hot_take` and `discussion_prompt` is 0.000. The 0.708 F1 is only for the `analysis` label. To fix this, I would need to add 50 more examples of `hot_take` to balance the dataset, but I ran out of time.
-*   **Criterion 4 (Precision on analysis):** Missed. Precision was 0.548. This is tied to the model's collapse, which would require a larger dataset or class weighting to fix.
-*   **Criterion 5 (Recall on hot_take):** Missed. My taxonomy does not handle emotional stories well. I forced a post about a terminal cancer diagnosis into `hot_take`, which confused the model. If I did this again, I would add a `personal_story` label.
-*   **Consistency and Confidence:** These criteria were not measured because the notebook does not output a second-read sample or a confidence threshold report.
+*   **Criterion 3 (Class balance):** Passed. The largest class is `analysis` at 52.7%, which is below the 60% threshold.
+*   **Criterion 4 (Second-read consistency):** Not Measured. The notebook does not output a second-read sample.
+*   **Criterion 5 (High-confidence precision):** Not Measured. The notebook does not output a confidence threshold report.
