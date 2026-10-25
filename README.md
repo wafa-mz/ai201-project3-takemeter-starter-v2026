@@ -177,7 +177,19 @@ Because there were no disagreements, there is no adjudication required. I believ
 
 ## Unit 6: The Improvement
 
-For my improvement, I diagnosed the issue as an inconsistent `analysis` / `hot_take` boundary. I went back to `labels.csv` and reviewed the boundary. I relabeled **2 rows** where long, emotional narratives or rants without checkable facts were incorrectly labeled as `analysis`. 
+For my improvement, I originally intended to relabel 2 rows to fix the boundary between `analysis` and `hot_take`. However, I ran out of time to successfully implement and re-train with this data change. Therefore, the "After" run log below reflects a re-run on the original dataset. 
+
+I set `RUN_LABEL = "after"` and ran the three seeds again.
+
+### Run Log — After
+
+| Criterion | Target | Seed 1 | Seed 2 | Seed 3 | Verdict |
+|---|---|---|---|---|---|
+| 1. Overall accuracy | ≥ 0.65 | 0.516 | 0.516 | 0.516 | MISSED |
+| 2. Every label F1 | ≥ 0.55 | 0.681 | 0.681 | 0.681 | MISSED |
+| 3. Beats baseline | yes | yes | yes | yes | MET |
+| 4. Precision on analysis | ≥ 0.70 | 0.681 | 0.681 | 0.681 | MISSED |
+| 5. Recall on hot_take | ≥ 0.60 | 0.000 | 0.000 | 0.000 | MISSED |
 
 I then set `RUN_LABEL = "after"` and ran the three seeds again. 
 
